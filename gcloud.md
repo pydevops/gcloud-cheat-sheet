@@ -90,9 +90,10 @@ PROJECT_ID=$(gcloud config get-value core/project 2>/dev/null)
 PROJECT_ID=$(gcloud config list project --format='value(core.project)')
 PROJECT_ID=$(gcloud info --format='value(config.project)')
 
-# get project_number given project_id or name
+# get project_number
 PROJECT_NUMBER=$(gcloud projects list --filter="project_id:${PROJECT_ID}"  --format='value(project_number)')
-gcloud projects list --filter="name:${project_name}"  --format='value(project_number)'
+PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
+PROJECT_NUMBER=$(gcloud projects list --filter="name:${project_name}"  --format='value(project_number)')
 ```
 
 ## 0.7. zones & regions
@@ -139,6 +140,7 @@ gcloud beta billing projects link ${project_id} \
 
 ## 0.10. iam
 ```
+
 gcloud iam roles describe roles/container.admin
 
 gcloud iam list-testable-permissions <uri>
@@ -151,6 +153,7 @@ gcloud iam list-grantable-roles https://www.googleapis.com/compute/v1/projects/$
 
 # get uri e.g.
 gcloud projects list --uri
+
 ```
 
 ## 0.11. service account 
@@ -170,10 +173,15 @@ gcloud iam service-accounts list   --filter='email ~ [0-9]*-compute@.*'   --form
 # create & list sa key  
 gcloud iam service-accounts keys create jenkins-sa.json --iam-account $SA_EMAIL    
 gcloud iam service-accounts keys list --iam-account=vault-admin@<project_id>.iam.gserviceaccount.com
+gcloud iam service-accounts keys create connect-sa-key.json \
+   --iam-account=connect-sa@${PROJECT_ID}.iam.gserviceaccount.com
 
+gcloud projects get-iam-policy ${PROJECT} --flatten="bindings[].members" --filter="bindings.members:serviceAccount:terraform@${PROJECT_ID}.iam.gserviceaccount.com"
 
- gcloud projects get-iam-policy ${PROJECT} --flatten="bindings[].members" --filter="bindings.members:serviceAccount:terraform@${PROJECT_ID}.iam.gserviceaccount.com"
- 
+gcloud projects get-iam-policy ${PROJECT} \
+    --flatten="bindings[].members" \
+    --filter="bindings.members:user:$(gcloud config get-value core/account 2>/dev/null)"
+
 gcloud projects add-iam-policy-binding $PROJECT  --role roles/storage.admin \
     --member serviceAccount:$SA_EMAIL
 gcloud projects add-iam-policy-binding $PROJECT --role roles/compute.instanceAdmin.v1 \
@@ -184,6 +192,11 @@ gcloud projects add-iam-policy-binding $PROJECT --role roles/compute.securityAdm
     --member serviceAccount:$SA_EMAIL
 gcloud projects add-iam-policy-binding $PROJECT --role roles/iam.serviceAccountActor \
     --member serviceAccount:$SA_EMAIL
+
+# for Anthos GKE on prem
+gcloud projects add-iam-policy-binding ${PROJECT} \
+ --member="serviceAccount:connect-sa@${PROJECT}.iam.gserviceaccount.com" \
+ --role="roles/gkehub.connect"
 ```
 
 ### 0.11.2. service account as a resource
@@ -475,7 +488,7 @@ Use [gcloud compute operations describe URI] command to check the status of the 
 ```
 
 ### 0.17.2. route
-tag the instances with `no-ips`
+tag the instances with `no-ip`
 
 ```
 gcloud compute instances add-tags existing-instance --tags no-ip
@@ -705,6 +718,18 @@ gcloud beta container clusters create run-gke \
   --machine-type n1-standard-4 \
   --enable-stackdriver-kubernetes \
   --no-enable-ip-alias
+```
+
+```
+export WORKLOAD_POOL=${PROJECT_ID}.svc.id.goog
+export MESH_ID="proj-${PROJECT_NUMBER}"
+gcloud bea contoner clusters create ${CLUSTER_NAME} \
+    --machine-type=n1-standard-4 \
+    --num-nodes=4 \
+    --workload-pool=${WORKLOAD_POOL} \
+    --enable-stackdriver-kubernetes \
+    --subnetwork=default  \
+    --labels mesh_id=${MESH_ID}
 ```
 
 
