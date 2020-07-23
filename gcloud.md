@@ -10,7 +10,7 @@
 * https://gist.github.com/bborysenko/97749fe0514b819a5a87611e6aea3db8
 
 ## 0.2. Other cheatsheets
-* https://github.com/dennyzhang/cheatsheet-gcp-A4
+* https://cloud.google.com/sdk/docs/cheatsheet
 
 ## 0.3. Manage multiple gcloud config configurations
 * https://www.jhanley.com/google-cloud-understanding-gcloud-configurations/
