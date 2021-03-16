@@ -8,6 +8,7 @@
 * https://medium.com/@Joachim8675309/getting-started-with-gcloud-sdk-part-1-114924737
 * https://medium.com/@Joachim8675309/getting-started-with-gcloud-sdk-part-2-4d049a656f1a
 * https://gist.github.com/bborysenko/97749fe0514b819a5a87611e6aea3db8
+* https://about.gitlab.com/blog/2020/02/12/plundering-gcp-escalating-privileges-in-google-cloud-platform/
 
 ## 0.2. Other cheatsheets
 * https://cloud.google.com/sdk/docs/cheatsheet
@@ -167,7 +168,7 @@ export SA_EMAIL=$(gcloud iam service-accounts list \
     --filter="displayName:jenkins" --format='value(email)')
 export PROJECT=$(gcloud info --format='value(config.project)')
 
-# creaate and list sa
+# create and list sa
 gcloud iam service-accounts create jenkins --display-name jenkins
 gcloud iam service-accounts list
 gcloud iam service-accounts list   --filter='email ~ [0-9]*-compute@.*'   --format='table(email)'
@@ -178,6 +179,7 @@ gcloud iam service-accounts keys list --iam-account=vault-admin@<project_id>.iam
 gcloud iam service-accounts keys create connect-sa-key.json \
    --iam-account=connect-sa@${PROJECT_ID}.iam.gserviceaccount.com
 
+# get-iam-policy
 gcloud projects get-iam-policy ${PROJECT} --flatten="bindings[].members" --filter="bindings.members:serviceAccount:terraform@${PROJECT_ID}.iam.gserviceaccount.com"
 
 gcloud projects get-iam-policy ${PROJECT} \
