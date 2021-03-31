@@ -609,6 +609,13 @@ gcloud compute addresses describe https-lb --global --format json
 gcloud projects list --format='value(project_id)' | xargs -I {} gcloud compute addresses list --format='value(address)' --project {}  2>/dev/null | sort | uniq -c
 ```
 
+### 0.17.8. private service access
+Useful for services like Cloud SQL and Redis, peering between a custom VPC to a managed VPC by google.
+```
+gcloud beta services vpc-peerings list --network=my-vpc
+```
+
+
 ## 0.18. interconnect 
 
 ```
