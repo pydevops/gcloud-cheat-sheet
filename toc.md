@@ -58,5 +58,5 @@
       * [0.25.1. create a GKE cluster with label and query it later](#0251-create-a-gke-cluster-with-label-and-query-it-later)
    * [0.26. Cloud SQL](#026-cloud-sql)
    * [0.27. Cloud Run](#027-cloud-run)
-   * [0.28. Machine Learning](#028-machine-learning)
-   * [0.29. Deployment Manager](#029-deployment-manager)
+   * [0.28 Artifact registry](#028-artifact-registry)
+   * [0.29. Machine Learning](#029-machine-learning)
